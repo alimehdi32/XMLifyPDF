@@ -11,17 +11,17 @@ export default function ProfilePage() {
     const [data, setData] = useState("nothing")
     const logout = async () => {
         try {
-            await axios.get('/api/users/logout')
+            await axios.get('/api/user/logout')
             toast.success('Logout successful')
             router.push('/login')
-        } catch (error:any) {
+        } catch (error) {
             console.log(error.message);
             toast.error(error.message)
         }
     }
 
     const getUserDetails = async () => {
-        const res = await axios.get('/api/users/me')
+        const res = await axios.get('/api/user/me')
         console.log(res.data);
         setData(res.data.data._id)
     }
