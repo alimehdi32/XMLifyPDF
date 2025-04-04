@@ -4,10 +4,20 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FaUserCircle } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+import Cookies from "js-cookie";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    console.log(token)  // Check for auth token in cookies
+    setIsLoggedIn(!!token);
+}, []);
 
   useEffect(() => {
     // Fetch user authentication status from the database via API
@@ -30,10 +40,15 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/login'); // Redirect to login page after logout
+      const res = await fetch('/api/user/logout', { method: 'GET' });
       if (res.ok) {
+        const data = await res.json();
+        console.log(data.message); // Logout successful message
+        setIsLoggedIn(false);
         setUser(null);
-        router.push('/');
+      } else {
+        console.error('Logout failed:', res.statusText);
       }
     } catch (error) {
       console.error('Logout failed:', error);
@@ -46,7 +61,8 @@ export default function Navbar() {
         <div className="text-2xl font-bold cursor-pointer">PDF to XML</div>
       </Link>
       <div className="flex items-center gap-4">
-        {user ? (
+        <Link href="/profile"><FontAwesomeIcon icon={faUser} size="2x" /> </Link>
+        {isLoggedIn ? (
           <>
             <div className="flex items-center gap-2">
               <FaUserCircle className="text-2xl" />
@@ -54,7 +70,7 @@ export default function Navbar() {
             </div>
             <button
               onClick={handleLogout}
-              className="bg-red-500 px-4 py-2 rounded-md hover:bg-red-700 transition"
+              className="bg-red-500 px-4 py-2 rounded-md hover:bg-red-700 transition cursor-pointer"
             >
               Logout
             </button>
@@ -62,12 +78,12 @@ export default function Navbar() {
         ) : (
           <>
             <Link href="/login">
-              <button className="bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-700 transition">
+              <button className="bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-700 transition cursor-pointer">
                 Login
               </button>
             </Link>
             <Link href="/signup">
-              <button className="bg-green-500 px-4 py-2 rounded-md hover:bg-green-700 transition">
+              <button className="bg-green-500 px-4 py-2 rounded-md hover:bg-green-700 transition cursor-pointer">
                 Sign Up
               </button>
             </Link>
