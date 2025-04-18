@@ -13,40 +13,49 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const token = Cookies.get("token");
-    console.log(token)  // Check for auth token in cookies
-    setIsLoggedIn(!!token);
-}, []);
-
-  useEffect(() => {
-    // Fetch user authentication status from the database via API
-    const fetchUser = async () => {
-      try {
-        const res = await fetch('/api/auth/user'); // Ensure this route is working
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('Error fetching user:', error);
+  const checkAuth = async () => {
+    try {
+      const res = await fetch('/api/auth/credential', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIsLoggedIn(true);
+        setUser(data.username);
+      } else {
+        setIsLoggedIn(false);
         setUser(null);
       }
+    } catch (error) {
+      setIsLoggedIn(false);
+      setUser(null);
+    }
+  };
+  useEffect(() => {
+    const handleAuthChange = () => {
+      checkAuth(); // call re-auth check
     };
-    fetchUser();
+  
+    window.addEventListener("auth-change", handleAuthChange);
+  
+    // Clean up listener
+    return () => {
+      window.removeEventListener("auth-change", handleAuthChange);
+    };
   }, []);
+    
+  
 
   const handleLogout = async () => {
     try {
-      router.push('/login'); // Redirect to login page after logout
       const res = await fetch('/api/user/logout', { method: 'GET' });
       if (res.ok) {
         const data = await res.json();
         console.log(data.message); // Logout successful message
         setIsLoggedIn(false);
         setUser(null);
+        router.push('/'); // Redirect only after successful logout
       } else {
         console.error('Logout failed:', res.statusText);
       }
@@ -54,6 +63,7 @@ export default function Navbar() {
       console.error('Logout failed:', error);
     }
   };
+  
 
   return (
     <nav className="bg-gray-900 text-white p-4 flex justify-between items-center shadow-lg">
@@ -66,7 +76,7 @@ export default function Navbar() {
           <>
             <div className="flex items-center gap-2">
               <FaUserCircle className="text-2xl" />
-              <span>Hi {user.name || 'User'}</span>
+              <span>Hi {user || 'User'}</span>
             </div>
             <button
               onClick={handleLogout}

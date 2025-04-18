@@ -21,6 +21,10 @@ export default function LoginPage() {
             console.log("Login success", response.data);
             toast.success("Login success");
             router.push("/");
+            setTimeout(() => {
+                // You need to somehow expose checkAuth globally or via props/context
+                window.dispatchEvent(new Event("auth-change"));
+              }, 500);
         } catch (error) {
             console.log("Login failed", error.message);
             toast.error(error.message);
