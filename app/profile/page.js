@@ -11,9 +11,15 @@ export default function ProfilePage() {
 
     const logout = async () => {
         try {
-            await axios.get("/api/user/logout");
-            toast.success("Logout successful");
-            router.push("/login");
+            const res = await fetch('/api/user/logout', { method: 'GET' });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data.message); // Logout successful message
+        setData([]); // Clear user data on logout
+        router.push('/'); // Redirect only after successful logout
+      } else {
+        console.error('Logout failed:', res.statusText);
+      }
         } catch (error) {
             console.log(error.message);
             toast.error(error.message);
