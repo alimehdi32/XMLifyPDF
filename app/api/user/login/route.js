@@ -7,6 +7,12 @@ import jwt from "jsonwebtoken";
 connect()
 
 export async function POST(request){
+    
+    if(request.cookies.get("token")){
+        request.cookies.set("token", "", 
+            { httpOnly: true, expires: new Date(0) 
+            });
+    }
     try {
 
         const reqBody = await request.json()

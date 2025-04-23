@@ -14,7 +14,13 @@ export async function POST(request){
 
         //check if user already exists
         const user = await User.findOne({email})
-
+        if(!username || !email || !password){
+            return NextResponse.json({error: "Please fill all the fields"}, {status: 400})
+        }
+        if(!email.includes("@")){
+            return NextResponse.json({error: "Please provide a valid email"}, {status: 400})
+        }
+        console.log(user);
         if(user){
             return NextResponse.json({error: "User already exists"}, {status: 400})
         }
@@ -22,7 +28,7 @@ export async function POST(request){
         //hash password
         const salt = await bcryptjs.genSalt(10)
         const hashedPassword = await bcryptjs.hash(password, salt)
-
+        console.log(hashedPassword);
         const newUser = new User({
             username,
             email,
