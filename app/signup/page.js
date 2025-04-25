@@ -12,8 +12,28 @@ export default function SignupPage() {
         email: "",
         password: "",
     });
+    const { username, email, password } = user;
+    
+
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [usernameError, setUsernameError] = useState("");
+
+    const userCheck = async (username) => {
+        try {
+            const response = await axios.post("/api/user/check", { username });
+            if (response.data.exists) {
+                setUsernameError("Username already exists");
+                setButtonDisabled(true);
+            } else {
+                setUsernameError("");
+                setButtonDisabled(!(user.email && user.password)); // Enable if other fields filled
+            }
+        } catch (error) {
+            console.log("User check failed", error.message);
+            toast.error("Failed to validate username");
+        }
+    };
 
     const onSignup = async () => {
         try {
@@ -24,15 +44,17 @@ export default function SignupPage() {
             router.push("/login");
         } catch (error) {
             console.log("Signup failed", error.message);
-            toast.error(error.message);
+            toast.error(error.response?.data?.error || "Signup failed");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        setButtonDisabled(!(user.username && user.email && user.password));
-    }, [user]);
+        const isIncomplete = !username || !email || !password || usernameError !== "";
+        setButtonDisabled(isIncomplete);
+    }, [username, email, password, usernameError]);
+    
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-900">
@@ -49,10 +71,18 @@ export default function SignupPage() {
                         id="username"
                         type="text"
                         value={user.username}
-                        onChange={(e) => setUser({ ...user, username: e.target.value })}
+                        onChange={(e) => {
+                            const newUsername = e.target.value;
+                            setUser({ ...user, username: newUsername });
+                            setUsernameError("");
+                        }}
+                        onBlur={() => userCheck(user.username)}
                         placeholder="Enter username"
                         className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
+                    {usernameError && (
+                        <p className="text-red-500 text-sm mt-1">{usernameError}</p>
+                    )}
                 </div>
 
                 {/* Email Field */}
