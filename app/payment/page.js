@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowLeft } from "react-icons/fa";
 import {useRouter} from "next/navigation";
-import Router from 'next/navigation';
+import { setCookie } from 'cookies-next'; // (for client side)
+import { Toaster, toast } from "react-hot-toast";
 
 const PaymentPage = () => {
   const [step, setStep] = useState(1);
@@ -60,7 +61,7 @@ const PaymentPage = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ amount: 499 }), // ₹499 in rupees
+      body: JSON.stringify({ amount: 10 }), // ₹10 in rupees
     }).then((res) => res.json());
 
     const options = {
@@ -72,8 +73,32 @@ const PaymentPage = () => {
       order_id: orderData.id,
       handler: async function (response) {
         // You can verify payment here by sending `response` to your backend
-        alert("Payment successful!");
+       /* alert("Payment successful!");
         console.log(response);
+        const paymentData = {
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature,
+        };
+        const res = await fetch("/api/payment/verify-payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(paymentData),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          console.log("Payment verified:", data);
+          alert("Payment verified successfully!");
+          router.push("/success"); // Redirect to success page
+        } else {
+          console.error("Payment verification failed:", data.error);
+          alert("Payment verification failed. Please try again.");
+        }*/
+          toast.success("🎉 Payment Successful!");
+          setCookie('paymentDone', 'true', { maxAge: 60 * 10 }); // valid for 10 mins
+        router.push("/")
       },
       prefill: {
         name: username,
