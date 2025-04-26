@@ -8,7 +8,11 @@ import Router from 'next/navigation';
 
 const PaymentPage = () => {
   const [step, setStep] = useState(1);
+  const [username, setUsername] = useState("Customer");
+  const [email, setEmail] = useState("customer@gmail.com");
+
   const router = useRouter(); // ✅ Hook usage
+
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -19,6 +23,28 @@ const PaymentPage = () => {
     });
   };
 
+  const fetchCredentials = async () => {
+    try {
+      const res = await fetch("/api/auth/credential", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUsername(data.username);
+        setEmail(data.email);
+        console.log("Fetched credentials:", data);
+      } else if (res.status === 401) {
+        console.error("User not authenticated:", data.error);
+        router.push("/login"); // Redirect to login page if not authenticated
+      } else {
+        console.error("Failed to fetch credentials:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching credentials:", error);
+    }
+  }
+  
   const handlePayment = async (e) => {
     e.preventDefault();
 
@@ -50,8 +76,8 @@ const PaymentPage = () => {
         console.log(response);
       },
       prefill: {
-        name: "Your Customer",
-        email: "customer@example.com",
+        name: username,
+        email: email,
         contact: "9999999999",
       },
       theme: {
@@ -95,8 +121,11 @@ const PaymentPage = () => {
                 Securely complete your payment with a single click.
               </p>
               <button
-                onClick={handlePayment}
-                className="w-full bg-indigo-600 text-white py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-indigo-700 transform transition-all duration-300 ease-in-out hover:scale-105"
+               onClick={async (e) => {
+                await fetchCredentials();
+                await handlePayment(e);
+              }}
+                className="w-full bg-indigo-600 text-white py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-indigo-700 transform transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer"
               >
                 <span className="block">Click to Pay ₹499</span>
               </button>

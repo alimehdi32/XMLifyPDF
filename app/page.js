@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
+import Link from "next/link";
 
 export default function Home() {
   const [file, setFile] = useState(null);
@@ -10,12 +11,16 @@ export default function Home() {
   const [xmlContent, setXmlContent] = useState(`<root><example>Converted XML</example></root>`); // Example XML
   const [fileName, setFileName] = useState("converted_file.xml");
   const [pdfFile, setPdfFile] = useState(null); // Will store the Data URL for PDF Viewer
+  const [attempt, setAttempt] = useState(0);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
     fetch("/api/history")
       .then((res) => res.json())
       .then(setHistory);
   }, []);
+
+
 
   const handleUpload = async () => {
     if (!file) return;
@@ -58,6 +63,13 @@ export default function Home() {
 
         {/* File Upload */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full">
+          { attempt >= 2 ? <button><Link href="/payment">&#8377;10?&nbsp;is all that takes to turn your PDF into XML magic.&nbsp;&#10024;&nbsp;Click to continue!
+            </Link>
+            </button>
+          : <p className="text-center text-sm text-indigo-600 font-semibold bg-indigo-100 py-2 px-4 rounded-lg shadow-md">
+          🚀 You have <span className="text-indigo-800">{2 - attempt}</span> free {2 - attempt === 1 ? "attempt" : "attempts"} left. Make it count!
+        </p>
+        }
           <input
             type="file"
             accept="application/pdf"
@@ -66,6 +78,7 @@ export default function Home() {
           />
           <button
             onClick={handleUpload}
+            disabled={buttonDisabled}
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-6 py-3 rounded transition w-24 md:w-auto"
           >
             Convert

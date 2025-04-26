@@ -19,31 +19,40 @@ export default function Navbar() {
         method: 'GET',
         credentials: 'include',
       });
-      if (res.ok) {
-        const data = await res.json();
+  
+      const data = await res.json(); // ✅ Parse the JSON first
+      
+      if (res.ok && data.success) {
         setIsLoggedIn(true);
         setUser(data.username);
+        
       } else {
         setIsLoggedIn(false);
         setUser(null);
+        
       }
     } catch (error) {
       setIsLoggedIn(false);
       setUser(null);
+      console.error("Auth check error:", error);
     }
   };
+  
   useEffect(() => {
+    console.log("Navbar mounted, checking auth status...");
+    checkAuth(); // 👈 make sure this is called on first load
+  
     const handleAuthChange = () => {
       checkAuth(); // call re-auth check
     };
   
     window.addEventListener("auth-change", handleAuthChange);
   
-    // Clean up listener
     return () => {
       window.removeEventListener("auth-change", handleAuthChange);
     };
   }, []);
+  
     
   
 
