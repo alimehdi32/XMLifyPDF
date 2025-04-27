@@ -7,6 +7,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import Cookies from "js-cookie";
+import { setCookie } from 'cookies-next';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -24,8 +25,7 @@ export default function Navbar() {
       
       if (res.ok && data.success) {
         setIsLoggedIn(true);
-        setUser(data.username);
-        
+        setUser(data.username); 
       } else {
         setIsLoggedIn(false);
         setUser(null);
@@ -64,6 +64,9 @@ export default function Navbar() {
         console.log(data.message); // Logout successful message
         setIsLoggedIn(false);
         setUser(null);
+        setCookie('loggedOut', 'true', { maxAge: 60 * 10 }); // valid for 10 mins
+        window.location.reload(); // Reload the page to clear any session data
+        // Optionally, you can redirect to the home page or login page
         router.push('/'); // Redirect only after successful logout
       } else {
         console.error('Logout failed:', res.statusText);

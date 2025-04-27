@@ -36,7 +36,7 @@ const PaymentPage = () => {
         setEmail(data.email);
         console.log("Fetched credentials:", data);
       } else if (res.status === 401) {
-        console.error("User not authenticated:", data.error);
+        toast.error("User not authenticated:", data.error);
         router.push("/login"); // Redirect to login page if not authenticated
       } else {
         console.error("Failed to fetch credentials:", data.error);
@@ -152,7 +152,7 @@ const PaymentPage = () => {
               }}
                 className="w-full bg-indigo-600 text-white py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-indigo-700 transform transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer"
               >
-                <span className="block">Click to Pay ₹499</span>
+                <span className="block">Click to Pay ₹10</span>
               </button>
               <button
                 type="button"

@@ -38,6 +38,21 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const logoutStatus = getCookie('loggedOut');
+    if (logoutStatus === 'true') {
+      setEmail(null);
+      deleteCookie('loggedOut'); // Clear it after using once
+      console.log("User logged out");
+      toast.error("🔒 You have been logged out. Please log in again.", {
+        style: {
+          background: "#1f2937",
+          color: "#fff",
+        },
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     const checkAuth = async () => {
       try {
         const res = await fetch("/api/auth/credential", {
