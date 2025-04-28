@@ -234,7 +234,7 @@ export default function Home() {
             {pdfFile && (
               <div className="w-full md:w-1/2 p-4">
                 <h3 className="text-lg font-semibold mb-2">PDF Preview</h3>
-                <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
+                <Worker workerUrl={`https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`}>
                   <div style={{ height: "400px", border: "1px solid #ccc" }}>
                     <Viewer fileUrl={pdfFile} />
                   </div>
