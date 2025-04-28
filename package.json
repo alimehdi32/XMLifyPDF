@@ -24,7 +24,7 @@
     "next": "15.2.4",
     "pdf-parse": "^1.1.1",
     "pdf2json": "^3.1.5",
-    "pdfjs-dist": "^4.10.38",
+    "pdfjs-dist": "^3.11.174",
     "pdftoxml": "file:",
     "razorpay": "^2.9.6",
     "react": "^19.0.0",
