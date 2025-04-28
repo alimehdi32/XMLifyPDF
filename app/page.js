@@ -22,12 +22,7 @@ export default function Home() {
   const [email, setEmail] = useState(null);
   const [paymentDone, setPaymentDone] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/history")
-      .then((res) => res.json())
-      .then(setHistory)
-      .catch(console.error);
-  }, []);
+  
 
   useEffect(() => {
     const paymentStatus = getCookie('paymentDone');
@@ -84,6 +79,7 @@ export default function Home() {
         if (res.ok && data.success) {
           setAttempt(data.attempts);
           setButtonDisabled(data.attempts >= 2);
+          console.log("Fetched attempts:", data.attempts);
         } else {
           console.error("Failed to fetch attempts:", data.error);
         }
@@ -94,13 +90,33 @@ export default function Home() {
     fetchAttempts();
   }, [email]);
 
+  useEffect(() => {
+    if (!email) return;
+  
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch(`/api/history?email=${email}`, {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await res.json();
+        console.log("History fetched:", data.history);
+        setHistory(data.history);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchHistory();
+  }, [email]);
+  
   const handleUpload = async () => {
     if (!file) return;
 
     const formData = new FormData();
     formData.append("pdfFile", file);
 
-    const res = await fetch("/api/upload", {
+    const res = await fetch(`/api/upload`, {
       method: "POST",
       body: formData,
     });
@@ -189,7 +205,7 @@ export default function Home() {
                 }
                 setFile(e.target.files[0]);
               }}
-              className="bg-gray-700 text-white p-3 rounded-lg w-full md:w-auto"
+              className="bg-gray-700 text-white cursor-pointer p-3 rounded-lg w-full md:w-auto"
             />
 
             <button
@@ -208,13 +224,13 @@ export default function Home() {
           {/* Download Button */}
           <button
             onClick={handleDownload}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-3 mt-6 rounded transition w-full"
+            className="bg-green-500 hover:bg-green-600 text-white cursor-pointer font-bold px-6 py-3 mt-6 rounded transition w-full"
           >
             Download XML
           </button>
 
           {/* PDF + XML Preview */}
-          <div className="mt-6 bg-gray-700 border border-amber-600 max-w-[1035px] p-4 flex flex-col md:flex-row rounded-lg overflow-y-auto max-h-[370px]">
+          <div className="mt-6 bg-gray-700 max-w-[1050px] scrollbar-hidden p-4 flex flex-col md:flex-row rounded-lg overflow-y-auto max-h-[370px]">
             {pdfFile && (
               <div className="w-full md:w-1/2 p-4">
                 <h3 className="text-lg font-semibold mb-2">PDF Preview</h3>
@@ -226,7 +242,7 @@ export default function Home() {
               </div>
             )}
 
-            <div className="w-full md:w-1/2 p-4">
+            <div className="w-full md:w-1/2 min-h-[340px] p-4">
               <h3 className="text-lg font-semibold">XML Content</h3>
               {xml ? (
                 <pre className="text-sm text-green-400 mt-2 bg-gray-800 p-4 rounded">{xml}</pre>
@@ -238,12 +254,13 @@ export default function Home() {
         </div>
 
         {/* Right Section - History */}
-        <div className="w-full md:w-1/4 bg-gray-800 p-6 rounded-lg shadow-lg overflow-y-auto max-h-[500px]">
+        <div className="w-full md:w-1/4 bg-gray-800 p-6 rounded-lg shadow-lg overflow-y-auto max-h-[600px]">
           <h2 className="text-lg font-bold border-b border-gray-600 pb-2 text-center md:text-left">
             Conversion History
           </h2>
           <ul className="mt-4 space-y-2">
             {history.length > 0 ? (
+              console.log("History:", history),
               history.map((h) => (
                 <li key={h._id} className="p-2 bg-gray-700 rounded-lg text-sm text-center md:text-left">
                   {h.pdfName}

@@ -10,7 +10,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-       className="scrollbar-hidden" 
+       className="scrollbar-hidden overflow-hidden" 
       >
         <Navbar/>
         {children}

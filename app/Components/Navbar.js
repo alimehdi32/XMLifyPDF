@@ -78,9 +78,9 @@ export default function Navbar() {
   
 
   return (
-    <nav className="bg-gray-900 text-white p-4 flex justify-between items-center shadow-lg">
+    <nav className="bg-gray-800 text-white p-4 flex justify-between items-center mb-0 pt-6 shadow-lg">
       <Link href="/">
-        <div className="text-2xl font-bold cursor-pointer">PDF to XML</div>
+        <div className="text-2xl font-bold cursor-pointer">XMLifyPDF</div>
       </Link>
       <div className="flex items-center gap-4">
         <Link href="/profile"><FontAwesomeIcon icon={faUser} size="2x" /> </Link>

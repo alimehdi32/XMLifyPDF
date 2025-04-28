@@ -9,6 +9,7 @@ if (!mongoose.connection.readyState) {
 }
 
 const conversionSchema = new mongoose.Schema({
+  email: String,
   pdfName: String,
   xmlContent: String,
   createdAt: { type: Date, default: Date.now },
