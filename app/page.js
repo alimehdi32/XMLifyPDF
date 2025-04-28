@@ -179,7 +179,7 @@ export default function Home() {
             {attempt >= 2 ? (
               <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-3 rounded transition">
                 <Link href="/payment">
-                  ₹10?&nbsp;That's all it takes to turn your PDF into XML magic. ✨ Click to continue!
+                  ₹10?&nbsp;That&apos;s all it takes to turn your PDF into XML magic. ✨ Click to continue!
                 </Link>
               </button>
             ) : (
