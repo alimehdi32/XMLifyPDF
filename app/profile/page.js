@@ -1,13 +1,15 @@
 "use client";
 import axios from "axios";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { get } from "mongoose";
 
 export default function ProfilePage() {
     const router = useRouter();
     const [data, setData] = useState([]);
+    const [payments, setPayment] = useState({});
 
     const logout = async () => {
         try {
@@ -36,6 +38,27 @@ export default function ProfilePage() {
             toast.error("Failed to get user details");
         }
     };
+
+    const getPaymentDetails = async () => {
+        try {
+            const payments = await axios.get("/api/paymentHistory", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            console.log(payments.data);
+            setPayment(payments.data);
+        } catch (error) {
+            
+        }
+    }
+
+    useEffect(() => {
+        getUserDetails();
+        getPaymentDetails();
+    }, []);
+
    
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-900">

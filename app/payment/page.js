@@ -62,7 +62,8 @@ const PaymentPage = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ amount: 10 }), // ₹10 in rupees
-    }).then((res) => res.json());
+    }).then((res) => res.json()
+     );
 
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
