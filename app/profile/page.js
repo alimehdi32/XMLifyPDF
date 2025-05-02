@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { deleteCookie } from 'cookies-next';
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -16,6 +17,15 @@ export default function ProfilePage() {
             if (res.ok) {
                 const data = await res.json();
                 setData([]);
+                setPayment([]);
+                deleteCookie('loggedOut'); // Clear it after using once
+                console.log("User logged out");
+                toast.error("🔒 You have been logged out. Please log in again.", {
+                    style: {
+                        background: "#1f2937",
+                        color: "#fff",
+                    },
+                });
                 router.push('/');
             } else {
                 console.error('Logout failed:', res.statusText);
@@ -80,7 +90,7 @@ export default function ProfilePage() {
                         <div className="space-y-4 max-h-64 overflow-y-auto pr-2 scrollbar-hidden scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
                             {payments.payments.map((payment, index) => (
                                 <div key={index} className="bg-gray-700 rounded-lg p-4 shadow hover:shadow-lg transition">
-                                    <p><span className="font-medium">Amount:</span> ₹{payment.amount/100}</p>
+                                    <p><span className="font-medium">Amount:</span> ₹{payment.amount / 100}</p>
                                     <p><span className="font-medium">Date:</span> {new Date(payment.createdAt).toLocaleDateString()}</p>
                                     <p><span className="font-medium">Receipt:</span> {payment.receipt}</p>
                                     <p><span className="font-medium">Transaction ID:</span> {payment.razorpay_payment_id}</p>
