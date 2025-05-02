@@ -9,7 +9,7 @@ export async function GET() {
                 success: true,
             }
         )
-        response.cookies.set("token", "", {
+        response.cookies.set("token", " ", {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // Required for HTTPS
             sameSite: 'lax', // or 'none' if using cross-site
