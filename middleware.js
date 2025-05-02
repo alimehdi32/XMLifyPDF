@@ -11,6 +11,18 @@ export function middleware(req) {
 
     return NextResponse.next();
 }
+  
+response.cookies.set("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Required for HTTPS
+    sameSite: 'lax', // or 'none' if using cross-site
+    path: '/',
+    maxAge: 60 * 60 * 24, // 1 day
+})
+
+
+console.log("Cookies in middleware:", req.cookies.getAll());
+
 
 // Define the paths where middleware should run
 export const config = {
