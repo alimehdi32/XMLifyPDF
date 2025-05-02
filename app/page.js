@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Toaster, toast } from "react-hot-toast";
 import { getCookie, deleteCookie } from 'cookies-next';
+import { set } from "mongoose";
 
 
 export default function Home() {
@@ -28,7 +29,8 @@ export default function Home() {
     const paymentStatus = getCookie('paymentDone');
     if (paymentStatus === 'true') {
       setPaymentDone(true);
-      deleteCookie('paymentDone'); // Clear it after using once
+      setButtonDisabled(false);
+      
     }
   }, []);
 
@@ -138,6 +140,9 @@ export default function Home() {
     if (response.ok) {
       setAttempt((prev) => prev + 1);
       setButtonDisabled((prev) => prev + 1 >= 2);
+      setPaymentDone(false);
+      toast.success("✅ File converted successfully!");
+      deleteCookie('paymentDone'); // Clear it after using once
     } else {
       console.error("Failed to update attempts:", result.error);
     }
@@ -147,10 +152,6 @@ export default function Home() {
       setPdfFile(e.target.result);
     };
     fileReader.readAsDataURL(file);
-    if (paymentDone) {
-      setPaymentDone(false);
-      setButtonDisabled(true);
-    }
     
   };
 
