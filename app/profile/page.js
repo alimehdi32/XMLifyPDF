@@ -4,37 +4,13 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { deleteCookie } from 'cookies-next';
+import { getCookie, deleteCookie } from 'cookies-next';
 
 export default function ProfilePage() {
     const router = useRouter();
     const [data, setData] = useState([]);
     const [payments, setPayment] = useState([]);
-
-    const logout = async () => {
-        try {
-            const res = await fetch('/api/user/logout', { method: 'GET' });
-            if (res.ok) {
-                const data = await res.json();
-                setData([]);
-                setPayment([]);
-                deleteCookie('loggedOut'); // Clear it after using once
-                console.log("User logged out");
-                toast.error("🔒 You have been logged out. Please log in again.", {
-                    style: {
-                        background: "#1f2937",
-                        color: "#fff",
-                    },
-                });
-                router.push('/');
-            } else {
-                console.error('Logout failed:', res.statusText);
-            }
-        } catch (error) {
-            toast.error(error.message);
-        }
-    };
-
+    
     const getUserDetails = async () => {
         try {
             const res = await axios.get("/api/user/profile");
@@ -101,14 +77,6 @@ export default function ProfilePage() {
                         <p className="text-gray-400">No payment history found.</p>
                     )}
                 </div>
-
-                {/* Logout Button */}
-                <button
-                    onClick={logout}
-                    className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition duration-300"
-                >
-                    Logout
-                </button>
             </div>
         </div>
     );

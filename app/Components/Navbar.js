@@ -8,11 +8,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import Cookies from "js-cookie";
 import { setCookie } from 'cookies-next';
+import { getCookie, deleteCookie } from 'cookies-next';
+import { toast } from 'react-hot-toast';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const logoutStatus = getCookie('loggedOut');
+    if (logoutStatus === 'true') {
+      setUser(null);
+      setIsLoggedIn(false);
+      deleteCookie('loggedOut'); // Clear it after using once
+      console.log("User logged out");
+      toast.error("🔒 You have been logged out. Please log in again.", {
+        style: {
+          background: "#1f2937",
+          color: "#fff",
+        },
+      });
+    }
+  }, []);
+
 
   const checkAuth = async () => {
     try {
@@ -66,8 +85,6 @@ export default function Navbar() {
         setUser(null);
         setCookie('loggedOut', 'true', { maxAge: 60 * 10 }); // valid for 10 mins
         window.location.reload(); // Reload the page to clear any session data
-        // Optionally, you can redirect to the home page or login page
-        router.push('/'); // Redirect only after successful logout
       } else {
         console.error('Logout failed:', res.statusText);
       }
