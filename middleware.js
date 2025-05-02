@@ -1,20 +1,23 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(req) {
-    const token = req.cookies.get("token")?.value; // Assuming JWT token is stored in cookies
-    console.log(token); // Log the token for debugging
-    console.log(req.nextUrl.pathname); // Log the requested path for debugging
-    // Check if the user is trying to access /profile but is not logged in
-    if (!token && req.nextUrl.pathname.startsWith("/profile")) {
-        return NextResponse.redirect(new URL("/login", req.url));
+    const token = req.cookies.get("token")?.value;
+
+    console.log("Token in middleware:", token);
+    console.log("Requested path:", req.nextUrl.pathname);
+
+    const isProtectedRoute = req.nextUrl.pathname.startsWith("/profile");
+
+    if (isProtectedRoute && !token) {
+        const loginUrl = new URL("/login", req.url);
+        loginUrl.searchParams.set("redirect", req.nextUrl.pathname); // Optional: add redirect back
+        return NextResponse.redirect(loginUrl);
     }
 
     return NextResponse.next();
 }
 
-
-// Define the paths where middleware should run
 export const config = {
-    matcher: ["/profile/:path*"], // Apply middleware to profile routes
+    matcher: ["/profile/:path*"], // You can also add other protected routes here
 };
-// This middleware checks if the user is logged in by verifying the presence of a JWT token in cookies. If the token is not present and the user tries to access the profile page, they are redirected to the login page.
